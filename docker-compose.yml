@@ -1,0 +1,30 @@
+version: '3'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: msa-study-zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      msa-study:
+        ipv4_address: 172.18.0.100
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: msa-study-kafka
+    depends_on:
+        - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.18.0.101
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "test:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      msa-study:
+        ipv4_address: 172.18.0.101
+networks:
+  msa-study:
+    external:
+      name: msa-study-network
